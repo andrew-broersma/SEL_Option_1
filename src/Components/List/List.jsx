@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './list.css'
+import CryptoJS from 'crypto-js'
 import ListItem from './ListItem';
 
 const List = () => {
@@ -9,8 +10,6 @@ const List = () => {
 
     let cookie = document.cookie
     let getLength = cookie.length
-    // console.log(wholeList.length)
-    // console.log(getLength)
 
 
     const submitButton = (e) => {
@@ -30,8 +29,8 @@ const List = () => {
     const pageLoad = () => {
         if (wholeList.length === 0 && cookie.length > 7) {
             let cutCookie = cookie.slice(5, getLength)
-            let cookieArr = JSON.parse(cutCookie)
-            setWholeList(cookieArr)
+            let decryptCookie = JSON.parse(CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(cutCookie, "p177a")))
+            setWholeList(decryptCookie)
         } 
     }
 
@@ -42,8 +41,8 @@ const List = () => {
         date.setTime(date.getTime() + 3*24*60*60*1000)
         let expires = "expires=" + date.toUTCString()
         let newCookie = JSON.stringify(wholeList)
-        document.cookie = "list=" + newCookie + ";" + expires
-        console.log(document.cookie)
+        let encryptCookie = CryptoJS.AES.encrypt(newCookie, "p177a")
+        document.cookie = "list=" + encryptCookie + ";" + expires
         } else {
             pageLoad()
         }
